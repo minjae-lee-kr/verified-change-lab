@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" lang="en" role="img" aria-labelledby="title description">
+<title id="title">Verify what “passed” means.</title><desc id="description">The same TypeScript candidate has implicit-any parameters and strict:true with noCheck:true. A compiler using candidate settings returns zero diagnostics and exit 0. A checker with independently fixed options and source files reports two type errors and exit 2. Approval is refused and the ref stays unchanged. A valid approval must bind the base, exact candidate and evidence digest. This local experiment does not establish authenticated approval, deployment or exactly-once execution.</desc>
+<rect width="1200" height="675" fill="#f4f3ec"/>
+<text x="56" y="47" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="600" >VERIFIED CHANGE / ENGINEERING EXPERIMENT</text>
+<text x="56" y="112" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="50" fill="#17282b" font-weight="650" >Verify what “passed” means.</text>
+<text x="56" y="154" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="24" fill="#586866" font-weight="400" >Same candidate. Two compiler policies. Approval refused.</text>
+<line x1="56" y1="183" x2="1144" y2="183" stroke="#c9d2c8"/>
+<line x1="388" y1="251" x2="388" y2="486" stroke="#c9d2c8"/><line x1="824" y1="251" x2="824" y2="486" stroke="#c9d2c8"/>
+<text x="56" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="19" fill="#1a6558" font-weight="650" >01</text>
+<text x="92" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="650" >Candidate patch</text>
+<text x="422" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="19" fill="#1a6558" font-weight="650" >02</text>
+<text x="458" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="650" >Checker policy</text>
+<text x="858" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="19" fill="#1a6558" font-weight="650" >03</text>
+<text x="894" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="650" >Evidence → decision</text>
+<text x="56" y="270" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >Implicit-any parameters</text>
+<text x="56" y="310" font-family="Consolas, Courier New, monospace" font-size="27" fill="#17282b" font-weight="600" class="code">method, status</text>
+<text x="56" y="375" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >Candidate settings</text>
+<text x="56" y="418" font-family="Consolas, Courier New, monospace" font-size="26" fill="#17282b" font-weight="500" class="code">strict: true</text>
+<text x="56" y="460" font-family="Consolas, Courier New, monospace" font-size="26" fill="#77531f" font-weight="600" class="code">noCheck: true</text>
+<text x="422" y="270" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >Reads candidate settings</text>
+<circle cx="430" cy="303" r="6" fill="#1a6558"/>
+<text x="448" y="315" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="33" fill="#1a6558" font-weight="650" >0 diagnostics</text>
+<text x="732" y="314" font-family="Consolas, Courier New, monospace" font-size="20" fill="#1a6558" font-weight="500" text-anchor="end" class="code">exit 0</text>
+<text x="422" y="347" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#77531f" font-weight="400" >Full type checking disabled</text>
+<line x1="422" y1="371" x2="790" y2="371" stroke="#c9d2c8"/>
+<text x="422" y="403" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >Uses trusted options + files</text>
+<text x="422" y="447" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="33" fill="#17282b" font-weight="650" >2 type errors</text>
+<text x="790" y="446" font-family="Consolas, Courier New, monospace" font-size="20" fill="#586866" font-weight="500" text-anchor="end" class="code">exit 2</text>
+<text x="422" y="479" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >Both implicit-any errors found</text>
+<text x="858" y="270" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >This candidate</text>
+<text x="858" y="313" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="29" fill="#17282b" font-weight="650" >Approval refused</text>
+<text x="858" y="356" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="32" fill="#1a6558" font-weight="650" >Ref unchanged</text>
+<text x="858" y="416" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >A valid approval must bind</text>
+<text x="858" y="451" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="600" >base + exact commit</text>
+<text x="858" y="484" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="600" >+ evidence digest</text>
+<rect x="40" y="516" width="1120" height="52" rx="14" fill="#e5ecdf"/>
+<text x="600" y="550" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="24" fill="#254b41" font-weight="600" text-anchor="middle">Keep the required check’s meaning outside the candidate’s control.</text>
+<text x="56" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >Local ref only</text>
+<text x="330" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >Unsigned evidence</text>
+<text x="660" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >A→B→A can replay approval</text>
+<line x1="56" y1="628" x2="1144" y2="628" stroke="#c9d2c8"/>
+<text x="56" y="656" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="400" >Recorded local experiment · schematic</text>
+<text x="1144" y="656" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="400" text-anchor="end">TypeScript 5.9.3 · source 5eb3fe8</text>
+</svg>

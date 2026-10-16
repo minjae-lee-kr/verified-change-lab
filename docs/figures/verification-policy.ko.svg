@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" lang="ko" role="img" aria-labelledby="title description">
+<title id="title">‘통과’의 의미까지 검증하기</title><desc id="description">같은 TypeScript 후보에 암묵적 any 매개변수와 strict:true, noCheck:true 설정이 있습니다. 후보의 설정을 읽는 컴파일러는 진단 0개와 종료 코드 0을 반환합니다. 별도로 정한 옵션과 파일 목록으로 검사하면 타입 오류 두 개와 종료 코드 2를 반환합니다. 승인은 거부되고 ref는 유지됩니다. 유효한 승인은 기준 커밋, 정확한 후보, 근거 다이제스트를 연결해야 합니다. 이 로컬 실험은 승인자 인증, 배포, 정확히 한 번 실행을 보장하지 않습니다.</desc>
+<rect width="1200" height="675" fill="#f4f3ec"/>
+<text x="56" y="47" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="600" >VERIFIED CHANGE / ENGINEERING EXPERIMENT</text>
+<text x="56" y="112" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="50" fill="#17282b" font-weight="650" >‘통과’의 의미까지 검증하기</text>
+<text x="56" y="154" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="24" fill="#586866" font-weight="400" >같은 후보, 다른 검사 정책. 승인은 거부되고 ref는 유지됐습니다.</text>
+<line x1="56" y1="183" x2="1144" y2="183" stroke="#c9d2c8"/>
+<line x1="388" y1="251" x2="388" y2="486" stroke="#c9d2c8"/><line x1="824" y1="251" x2="824" y2="486" stroke="#c9d2c8"/>
+<text x="56" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="19" fill="#1a6558" font-weight="650" >01</text>
+<text x="92" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="650" >변경 후보</text>
+<text x="422" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="19" fill="#1a6558" font-weight="650" >02</text>
+<text x="458" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="650" >검사 정책</text>
+<text x="858" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="19" fill="#1a6558" font-weight="650" >03</text>
+<text x="894" y="222" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="650" >근거 → 결정</text>
+<text x="56" y="270" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >암묵적 any 매개변수</text>
+<text x="56" y="310" font-family="Consolas, Courier New, monospace" font-size="27" fill="#17282b" font-weight="600" class="code">method, status</text>
+<text x="56" y="375" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >후보에 포함된 설정</text>
+<text x="56" y="418" font-family="Consolas, Courier New, monospace" font-size="26" fill="#17282b" font-weight="500" class="code">strict: true</text>
+<text x="56" y="460" font-family="Consolas, Courier New, monospace" font-size="26" fill="#77531f" font-weight="600" class="code">noCheck: true</text>
+<text x="422" y="270" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >후보의 설정을 읽으면</text>
+<circle cx="430" cy="303" r="6" fill="#1a6558"/>
+<text x="448" y="315" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="33" fill="#1a6558" font-weight="650" >진단 0개</text>
+<text x="732" y="314" font-family="Consolas, Courier New, monospace" font-size="20" fill="#1a6558" font-weight="500" text-anchor="end" class="code">exit 0</text>
+<text x="422" y="347" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#77531f" font-weight="400" >전체 타입 검사가 생략됨</text>
+<line x1="422" y1="371" x2="790" y2="371" stroke="#c9d2c8"/>
+<text x="422" y="403" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >별도로 정한 옵션·파일로 검사</text>
+<text x="422" y="447" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="33" fill="#17282b" font-weight="650" >타입 오류 2개</text>
+<text x="790" y="446" font-family="Consolas, Courier New, monospace" font-size="20" fill="#586866" font-weight="500" text-anchor="end" class="code">exit 2</text>
+<text x="422" y="479" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >암묵적 any 오류 두 개를 확인</text>
+<text x="858" y="270" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="21" fill="#586866" font-weight="400" >이 후보의 결과</text>
+<text x="858" y="313" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="29" fill="#17282b" font-weight="650" >승인 거부</text>
+<text x="858" y="356" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="32" fill="#1a6558" font-weight="650" >ref 유지</text>
+<text x="858" y="416" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >유효한 승인이 연결할 대상</text>
+<text x="858" y="451" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="22" fill="#17282b" font-weight="600" >기준 커밋 + 후보 커밋</text>
+<text x="858" y="484" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="600" >+ 근거 다이제스트</text>
+<rect x="40" y="516" width="1120" height="52" rx="14" fill="#e5ecdf"/>
+<text x="600" y="550" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="24" fill="#254b41" font-weight="600" text-anchor="middle">후보가 필수 검사의 의미까지 바꾸게 두지 않습니다.</text>
+<text x="56" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >로컬 ref만 변경</text>
+<text x="330" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >서명하지 않은 근거</text>
+<text x="660" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >A→B→A 이후 승인 재사용 가능</text>
+<line x1="56" y1="628" x2="1144" y2="628" stroke="#c9d2c8"/>
+<text x="56" y="656" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="400" >기록된 로컬 실험 · 개념도</text>
+<text x="1144" y="656" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="400" text-anchor="end">TypeScript 5.9.3 · source 5eb3fe8</text>
+</svg>

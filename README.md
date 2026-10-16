@@ -8,6 +8,10 @@ An automation experiment about keeping verification attached to a change. The na
 
 Artifact identity is only half the problem. A candidate can also weaken its own checker: `strict: true` together with `noCheck: true` makes a real TypeScript compiler report green on code with type errors. The trusted checker supplies its own options and source inventory, detects the errors and refuses approval.
 
+[![The same candidate produces zero diagnostics under its own settings and two type errors under independent options; approval is refused.](docs/figures/verification-policy.en.svg)](docs/figures/verification-policy.en.svg)
+
+Schematic of the recorded TypeScript 5.9.3 counterexample at source `5eb3fe8`. The footer identifies that historical run; the figure is not a live result. The A→B→A limitation comes from a separate regression test. Run `pnpm experiment` to generate fresh evidence.
+
 ## Run locally
 
 Requires **Node 24.12–24.x**, Git and **pnpm 11.25.0**. No credentials or network calls after installation.
