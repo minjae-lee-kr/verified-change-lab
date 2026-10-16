@@ -14,7 +14,7 @@ Schematic of the recorded TypeScript 5.9.3 counterexample at source `5eb3fe8`. T
 
 ## Run locally
 
-Requires **Node 24.12–24.x**, Git and **pnpm 11.25.0**. No credentials or network calls after installation.
+Requires **Node 24.12–24.x**, Git and **pnpm 11.25.0**. Verified on Windows x64 with Node 24.12.0 and 24.19.0; other releases and platforms are not exhaustively tested. No credentials or network calls after installation.
 
 ```sh
 pnpm install --frozen-lockfile
