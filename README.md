@@ -4,9 +4,9 @@
 
 [한국어](README.ko.md) · [Design and trust boundaries](docs/design.md)
 
-An automation experiment about keeping verification attached to a change. The naive path checks a candidate, waits for approval, then commits a workspace that has changed. A real runtime check confirms that the selected code breaks the contract. The protected path selects the exact verified commit.
+An approval harness binds immutable Git candidates to independently defined checks before conditionally selecting a commit. The deliberately naive path checks a candidate, waits for approval and commits a changed workspace; a runtime check then catches the broken contract. The protected path selects the exact verified commit.
 
-Artifact identity is only half the problem. A candidate can also weaken its own checker: `strict: true` together with `noCheck: true` makes a real TypeScript compiler report green on code with type errors. The trusted checker supplies its own options and source inventory, detects the errors and refuses approval.
+Artifact identity is only half the problem. In the deliberate control, a candidate supplies `strict: true` together with `noCheck: true`: TypeScript skips type checking as configured and reports no type errors. The trusted checker supplies its own options and source inventory, detects the errors and refuses approval.
 
 [![The same candidate produces zero diagnostics under its own settings and two type errors under independent options; approval is refused.](docs/figures/verification-policy.en.svg)](docs/figures/verification-policy.en.svg)
 
