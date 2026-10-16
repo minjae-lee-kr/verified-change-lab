@@ -25,6 +25,8 @@ The approval layer imports the required checker/check inventory from `src/policy
 
 Completeness is not enough. The report runs an actual TypeScript compiler with candidate-controlled `strict: true, noCheck: true`: it reports no errors for implicit-any source. The trusted checker supplies strict options and the exact source-file list independently, detects the errors and refuses approval. A regression also covers candidate `strict: false` and an empty file list. A candidate cannot waive its own required verification by changing `tsconfig.json`.
 
+Fixed options do not imply unsuppressed semantic checking. TypeScript still honors a source-level `// @ts-nocheck` directive. A separate regression adds it to a runtime-correct candidate with implicit-any parameters: the fixed checker returns zero diagnostics, valid evidence is approved, and the conditional update succeeds. This is an allowed outcome under the declared policy, outside the five-case report. A policy that forbids source suppressions needs an explicit additional rule and review boundary; compiler success alone does not establish that rule or general type safety.
+
 The policy digest includes checker, runner, subprocess, approval/execution and CLI sources; package manifest and lockfile; declared check inventory; and Node/TypeScript versions. Candidate identity and policy identity remain separate. Dependencies are pinned, but installed dependency bytes and the Node binary are not independently attested.
 
 ## Immutable inputs, bounded processes
@@ -88,7 +90,8 @@ Preserving artifact identity across an approval delay costs extra object/snapsho
 - [`src/process.ts`](../src/process.ts), [`src/execution.ts`](../src/execution.ts): bounded processes, concurrency barrier and fault injection.
 - [`src/experiment.ts`](../src/experiment.ts): naive comparisons and recorded counterexamples.
 - [`test/protocol.test.ts`](../test/protocol.test.ts): positive controls, missing evidence, binding changes, process faults and the A-B-A limit.
+- [`test/source-suppression.test.ts`](../test/source-suppression.test.ts): the separate source-directive boundary, through real verification, approval and conditional update.
 
 ## Primary references
 
-Conditional updates follow [Git's old-value check](https://git-scm.com/docs/git-update-ref); candidate objects use [`commit-tree`](https://git-scm.com/docs/git-commit-tree). Process handling uses [Node's child-process API](https://nodejs.org/api/child_process.html). TypeScript documents [strict-family overrides](https://www.typescriptlang.org/tsconfig/strict.html) and [`noCheck`](https://www.typescriptlang.org/tsconfig/noCheck.html). This applies established mechanisms to a narrow counterexample; it does not claim a new approval or consensus protocol.
+Conditional updates follow [Git's old-value check](https://git-scm.com/docs/git-update-ref); candidate objects use [`commit-tree`](https://git-scm.com/docs/git-commit-tree). Process handling uses [Node's child-process API](https://nodejs.org/api/child_process.html). TypeScript documents [strict-family overrides](https://www.typescriptlang.org/tsconfig/strict.html), [`noCheck`](https://www.typescriptlang.org/tsconfig/noCheck.html) and [source-level `@ts-nocheck`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html). This applies established mechanisms to a narrow counterexample; it does not claim a new approval or consensus protocol.

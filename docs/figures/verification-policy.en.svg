@@ -34,10 +34,10 @@
 <text x="858" y="451" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="600" >base + exact commit</text>
 <text x="858" y="484" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="600" >+ evidence digest</text>
 <rect x="40" y="516" width="1120" height="52" rx="14" fill="#e5ecdf"/>
-<text x="600" y="550" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="24" fill="#254b41" font-weight="600" text-anchor="middle">Keep the required check’s meaning outside the candidate’s control.</text>
+<text x="600" y="550" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="24" fill="#254b41" font-weight="600" text-anchor="middle">Separate checker options exposed this candidate’s type errors.</text>
 <text x="56" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >Local ref only</text>
 <text x="330" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >Unsigned evidence</text>
-<text x="660" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >A→B→A can replay approval</text>
+<text x="660" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >Scripted candidates · no LLM</text>
 <line x1="56" y1="628" x2="1144" y2="628" stroke="#c9d2c8"/>
 <text x="56" y="656" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="400" >Recorded local experiment · schematic</text>
 <text x="1144" y="656" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="400" text-anchor="end">TypeScript 5.9.3 · source 5eb3fe8</text>

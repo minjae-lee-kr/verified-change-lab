@@ -34,10 +34,10 @@
 <text x="858" y="451" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="22" fill="#17282b" font-weight="600" >기준 커밋 + 후보 커밋</text>
 <text x="858" y="484" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="23" fill="#17282b" font-weight="600" >+ 근거 다이제스트</text>
 <rect x="40" y="516" width="1120" height="52" rx="14" fill="#e5ecdf"/>
-<text x="600" y="550" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="24" fill="#254b41" font-weight="600" text-anchor="middle">후보가 필수 검사의 의미까지 바꾸게 두지 않습니다.</text>
+<text x="600" y="550" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="24" fill="#254b41" font-weight="600" text-anchor="middle">후보 설정과 분리한 검사로, 이 변경의 타입 오류를 확인했습니다.</text>
 <text x="56" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >로컬 ref만 변경</text>
 <text x="330" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >서명하지 않은 근거</text>
-<text x="660" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >A→B→A 이후 승인 재사용 가능</text>
+<text x="660" y="605" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="20" fill="#586866" font-weight="400" >스크립트 후보 · LLM 호출 없음</text>
 <line x1="56" y1="628" x2="1144" y2="628" stroke="#c9d2c8"/>
 <text x="56" y="656" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="400" >기록된 로컬 실험 · 개념도</text>
 <text x="1144" y="656" font-family="Segoe UI, Malgun Gothic, Arial, sans-serif" font-size="18" fill="#586866" font-weight="400" text-anchor="end">TypeScript 5.9.3 · source 5eb3fe8</text>

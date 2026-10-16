@@ -25,6 +25,8 @@ flowchart LR
 
 결과가 모두 있다는 것만으로도 충분하지 않습니다. 보고서는 후보가 정한 `strict: true, noCheck: true`로 실제 TypeScript 컴파일러를 실행합니다. implicit-any 소스에서도 오류가 없다고 보고합니다. 신뢰하는 검사기는 strict 옵션과 정확한 소스 목록을 독립적으로 정해 오류를 발견하고 승인을 거절합니다. 후보의 `strict: false`와 빈 파일 목록도 회귀 테스트로 확인합니다. 후보가 `tsconfig.json`을 바꿔 자신의 필수 검사를 생략할 수 없게 합니다.
 
+옵션을 고정해도 소스 수준의 검사 생략까지 막지는 않습니다. TypeScript는 `// @ts-nocheck` 지시문을 계속 따릅니다. 별도 회귀 검사는 런타임 계약을 만족하지만 implicit-any 매개변수가 있는 후보에 이 지시문을 추가합니다. 고정된 검사기는 진단 0개를 반환하고, 유효한 근거로 승인이 발급되어 조건부 갱신도 성공합니다. 선언한 정책이 허용하는 결과이며 다섯 사례의 보고서와는 구분됩니다. 소스의 검사 생략을 금지하려면 별도 규칙과 검토 경계가 필요합니다. 컴파일 성공만으로 그 규칙이나 일반적인 타입 안전성을 입증할 수는 없습니다.
+
 정책 digest에는 검사기·실행기·하위 프로세스 처리·승인 및 반영 로직·CLI의 소스, 패키지와 lockfile, 필수 검사 목록, Node/TypeScript 버전이 들어갑니다. 후보 코드와 검사 정책은 별도 대상입니다. 의존성 버전은 고정하지만 설치된 의존성 파일 전체나 Node 바이너리까지 독립적으로 검증한 것은 아닙니다.
 
 ## 불변 입력과 프로세스 실행 한도
@@ -88,7 +90,8 @@ A-B-A 반례는 기준 → 후보 → 기준으로 ref를 되돌린 뒤, 아직 
 - [`src/process.ts`](../src/process.ts), [`src/execution.ts`](../src/execution.ts): 프로세스 실행 한도, 동시 실행 준비 신호와 장애 주입.
 - [`src/experiment.ts`](../src/experiment.ts): 잘못된 경로와 비교하고 반례를 기록.
 - [`test/protocol.test.ts`](../test/protocol.test.ts): 정상 대조군, 검사 누락, 근거 연결 변경, 프로세스 장애와 A-B-A 한계.
+- [`test/source-suppression.test.ts`](../test/source-suppression.test.ts): 실제 검증·승인·조건부 갱신으로 확인하는 별도의 소스 지시문 한계.
 
 ## 공식 참고 문서
 
-조건부 갱신은 [Git의 이전 값 검사](https://git-scm.com/docs/git-update-ref), 후보 객체는 [`commit-tree`](https://git-scm.com/docs/git-commit-tree)를 사용합니다. 프로세스 처리는 [Node의 child-process API](https://nodejs.org/api/child_process.html)를 따릅니다. TypeScript 문서는 [strict 하위 옵션](https://www.typescriptlang.org/tsconfig/strict.html)과 [`noCheck`](https://www.typescriptlang.org/tsconfig/noCheck.html)를 설명합니다. 알려진 기법을 좁은 반례에 적용한 실험이며 새로운 승인·합의 프로토콜을 제안하지 않습니다.
+조건부 갱신은 [Git의 이전 값 검사](https://git-scm.com/docs/git-update-ref), 후보 객체는 [`commit-tree`](https://git-scm.com/docs/git-commit-tree)를 사용합니다. 프로세스 처리는 [Node의 child-process API](https://nodejs.org/api/child_process.html)를 따릅니다. TypeScript 문서는 [strict 하위 옵션](https://www.typescriptlang.org/tsconfig/strict.html), [`noCheck`](https://www.typescriptlang.org/tsconfig/noCheck.html), [소스 수준의 `@ts-nocheck`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html)를 설명합니다. 알려진 기법을 좁은 반례에 적용한 실험이며 새로운 승인·합의 프로토콜을 제안하지 않습니다.

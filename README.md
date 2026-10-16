@@ -6,11 +6,11 @@
 
 An approval harness binds immutable Git candidates to independently defined checks before conditionally selecting a commit. The deliberately naive path checks a candidate, waits for approval and commits a changed workspace; a runtime check then catches the broken contract. The protected path selects the exact verified commit.
 
-Artifact identity is only half the problem. In the deliberate control, a candidate supplies `strict: true` together with `noCheck: true`: TypeScript skips type checking as configured and reports no type errors. The trusted checker supplies its own options and source inventory, detects the errors and refuses approval.
+Artifact identity is only half the problem. In the deliberate control, a candidate supplies `strict: true` together with `noCheck: true`: TypeScript skips type checking as configured and reports no type errors. The trusted checker supplies its own options and source inventory, detects the errors and refuses approval. This closes the candidate-configuration route shown here; source-level suppressions remain allowed by the declared policy.
 
 [![The same candidate produces zero diagnostics under its own settings and two type errors under independent options; approval is refused.](docs/figures/verification-policy.en.svg)](docs/figures/verification-policy.en.svg)
 
-Schematic of the recorded TypeScript 5.9.3 counterexample at source `5eb3fe8`. The footer identifies that historical run; the figure is not a live result. The A→B→A limitation comes from a separate regression test. Run `pnpm experiment` to generate fresh evidence.
+Schematic of the recorded TypeScript 5.9.3 counterexample at source `5eb3fe8`. The footer identifies that historical run; the figure is not a live result. Run `pnpm experiment` to generate fresh evidence.
 
 ## Run locally
 
