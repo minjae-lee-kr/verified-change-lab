@@ -23,7 +23,7 @@ const copy = {
     loading: 'Loading the locally generated evidence…',
     loadError: 'Run pnpm experiment, then reload.',
     eyebrow: 'AUTOMATION · EVIDENCE · CHANGE CONTROL',
-    headline: 'Approve the change.\nKeep the proof attached.',
+    headline: 'Approve the change.\nKeep the evidence attached.',
     lead: 'A passing check describes a moment. This experiment asks whether that evidence still belongs to the code we actually apply.',
     boundary:
       'Real Git objects and child processes. Original synthetic source. Local ref changes only.',
@@ -54,9 +54,9 @@ const copy = {
     cases: {
       drift: [
         'Workspace drift',
-        'The check passed. Different bytes shipped.',
+        'The check passed. A different commit was selected.',
         'The naive path checks a candidate, then commits the mutable workspace after an edit. The protected path applies the already-verified immutable commit, even though its workspace also changed.',
-        'The experiment really releases the unchecked version in an isolated fixture, then demonstrates its failing runtime contract. The protected ref still names the checked commit.',
+        'The experiment moves the fixture ref to the unchecked commit, then demonstrates its failing runtime contract. The protected ref still names the checked commit.',
       ],
       empty: [
         'What did green mean?',
@@ -68,7 +68,7 @@ const copy = {
         'Evidence reuse',
         'Valid evidence can belong to the wrong change.',
         'Two implementations satisfy the same intended contract but have different commits. Evidence for the first cannot approve the second. The expiry boundary is separately evaluated using an explicitly injected logical time.',
-        'Equivalence of intent is not identity of artifact. New bytes require new evidence; elapsed evidence requires a fresh run.',
+        'Equivalence of intent is not identity of artifact. New bytes require new evidence; expired evidence requires a fresh run.',
       ],
       competing: [
         'Competing approvals',
@@ -84,7 +84,7 @@ const copy = {
       ],
     },
     labels: {
-      naiveReleasedUnverifiedBytes: 'Naive path released unchecked bytes',
+      naiveReleasedUnverifiedBytes: 'Naive path selected an unchecked commit',
       postHocCheck: 'Post-hoc contract result',
       boundApply: 'Bound path apply result',
       releasedExactlyVerifiedCommit: 'Protected release ref',
@@ -149,10 +149,10 @@ const copy = {
     all: '선언한 결과가 실제 실행 기록과 일치했습니다.',
     facts: '검증 근거와 판단 상세 보기',
     raw: '원시 명령 실행 기록 보기',
-    limitsLabel: '증명할 수 있는 범위까지 명확하게',
+    limitsLabel: '확인한 범위와 한계를 함께',
     limitsTitle: '근거는 불확실성을 줄입니다. 없애지는 않습니다.',
     limitsBody:
-      '신뢰하는 로컬 프로세스의 실험입니다. 샌드박스, 사용자 인증 또는 배포 도구가 아닙니다. 해시는 기록을 연결하지만 로컬 파일 작성자의 위조를 막지 못합니다. ref 관찰은 현재 값만 증명하며, 변경 주체나 외부 작업의 정확히 한 번 실행을 증명하지 않습니다. 보고서의 승인은 스크립트가 수행하며, 별도 CLI에서 사람이 직접 확인하는 흐름을 제공합니다.',
+      '신뢰하는 로컬 프로세스의 실험입니다. 샌드박스, 사용자 인증 또는 배포 도구가 아닙니다. 해시는 기록을 연결하지만 로컬 파일 작성자의 위조를 막지 못합니다. ref 관찰로는 현재 값만 확인할 수 있으며, 변경 주체나 외부 작업의 정확히 한 번 실행을 알 수는 없습니다. 보고서의 승인은 스크립트가 수행하며, 별도 CLI에서 사람이 직접 확인하는 흐름을 제공합니다.',
     download: '전체 실행 기록 JSON 다운로드 ↗',
     generated: '생성 시각',
     fingerprint: '소스 지문',
@@ -169,7 +169,7 @@ const copy = {
       ],
       empty: [
         '통과한 검사의 의미',
-        '초록색 검사가 더 쉬운 질문에 답했을 수 있다.',
+        '통과한 검사가 더 약한 기준을 확인했을 수 있다.',
         '먼저 구체적인 검사 없이 정상 종료하는 경우를 확인합니다. 다음 후보는 strict: true와 noCheck: true를 함께 설정합니다. 후보 설정을 따른 실제 컴파일러는 implicit-any 코드에서도 오류가 없다고 보고합니다.',
         '후보가 검사의 의미를 바꿀 수 있다면 이름과 누락 여부만 확인해서는 부족합니다. 신뢰하는 검사기가 필수 목록과 컴파일 옵션을 독립적으로 적용하면 오류를 발견하고 승인을 거절합니다.',
       ],
