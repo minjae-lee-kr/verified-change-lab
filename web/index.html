@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Verified Change Lab</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#case-panel">Skip to evidence</a>
+    <div class="page">
+      <header>
+        <a class="brand" href="/" aria-label="Verified Change Lab home"
+          ><span class="mark" aria-hidden="true">↗</span
+          ><span>Verified Change<span class="brand-sub">A LOCAL GIT EXPERIMENT</span></span></a
+        >
+        <div class="languages" aria-label="Language">
+          <button id="ko" type="button" lang="ko">한국어</button
+          ><button id="en" type="button" lang="en">English</button>
+        </div>
+      </header>
+      <main>
+        <section class="hero">
+          <p class="eyebrow" id="eyebrow"></p>
+          <h1 id="headline"></h1>
+          <p class="lead" id="lead"></p>
+          <div class="boundary" id="boundary"></div>
+        </section>
+        <ol class="protocol" id="protocol"></ol>
+        <div class="workspace">
+          <nav id="cases" aria-label="Experiment cases"></nav>
+          <article id="case-panel" aria-labelledby="case-title" tabindex="-1">
+            <p id="loading">Loading the locally generated evidence…</p>
+          </article>
+        </div>
+        <section class="limits">
+          <p class="eyebrow" id="limits-label"></p>
+          <h2 id="limits-title"></h2>
+          <p id="limits-body"></p>
+          <a href="/report.json" download="verified-change-report.json" id="download"></a>
+        </section>
+      </main>
+      <footer>
+        <span id="provenance"></span><code id="fingerprint"></code>
+        <details>
+          <summary id="source-label"></summary>
+          <pre id="source-files" tabindex="0"></pre>
+        </details>
+      </footer>
+    </div>
+  </body>
+</html>

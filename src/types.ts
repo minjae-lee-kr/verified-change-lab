@@ -1,0 +1,82 @@
+export type Fixture = {
+  id: string;
+  root: string;
+  repository: string;
+  workspace: string;
+  base: string;
+};
+export type Candidate = { id: string; base: string; commit: string; tree: string };
+export type CheckId = 'runtime-contract' | 'strict-types';
+export type Fault = 'normal' | 'empty-pass' | 'partial-pass' | 'hang' | 'oversized';
+export type Check = { id: string; passed: boolean; detail: string };
+export type SourceFile = { path: string; sha256: string };
+export type CheckRequest = {
+  version: 1;
+  runId: string;
+  nonce: string;
+  checker: CheckId;
+  candidate: Candidate;
+  policyDigest: string;
+  requestedAt: number;
+  files: SourceFile[];
+  fault: Fault;
+};
+export type CheckReport = {
+  version: 1;
+  runId: string;
+  nonce: string;
+  checker: CheckId;
+  candidateCommit: string;
+  candidateTree: string;
+  policyDigest: string;
+  startedAt: number;
+  completedAt: number;
+  sourceConsistent: boolean;
+  checks: Check[];
+};
+export type ProcessResult = {
+  executable: string;
+  arguments: string[];
+  cwd: string;
+  exitCode: number | null;
+  signal: string | null;
+  stdout: string;
+  stderr: string;
+  timedOut: boolean;
+  outputLimited: boolean;
+  directChildExitConfirmed: boolean;
+  ownedTreeTerminationAcknowledged: boolean | null;
+};
+export type Transcript = { sequence: number; event: string; detail: unknown }[];
+export type Policy = {
+  version: 1;
+  required: { checker: CheckId; checks: string[] }[];
+  verifierTimeoutMs: number;
+  maxOutputBytes: number;
+  evidenceTtlMs: number;
+  nodeVersion: string;
+  typescriptVersion: string;
+  sourceHashes: SourceFile[];
+};
+export type Evidence = {
+  version: 1;
+  runId: string;
+  candidate: Candidate;
+  policy: Policy;
+  policyDigest: string;
+  createdAt: number;
+  expiresAt: number;
+  results: { request: CheckRequest; process: ProcessResult; report: unknown }[];
+};
+export type Approval = {
+  version: 1;
+  reviewerLabel: string;
+  base: string;
+  candidateCommit: string;
+  candidateTree: string;
+  evidenceDigest: string;
+  policyDigest: string;
+  issuedAt: number;
+  expiresAt: number;
+};
+export type Verdict = { ok: boolean; code: string; reason: string };
