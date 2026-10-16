@@ -16,10 +16,30 @@ const requiredArity: Record<string, number> = {
   apply: 2,
   reconcile: 2,
 };
-if (!command || args.length !== requiredArity[command]) {
+const usage = [
+  'Usage:',
+  '  pnpm lab prepare',
+  '  pnpm lab show <fixture>',
+  '  pnpm lab approve <fixture> <commit> <evidence-digest>',
+  '  pnpm lab apply <fixture>',
+  '  pnpm lab reconcile <fixture>',
+  '  pnpm lab help',
+  '  pnpm lab --help',
+  '',
+  'Run from the repository root, or use pnpm --dir <repository> lab <command>.',
+  'prepare creates a synthetic fixture; approve records a local decision;',
+  'apply conditionally updates only its release ref; reconcile reads the current ref.',
+  'No arguments, help, and --help only print this usage. Operation flags are not accepted.',
+].join('\n');
+const help =
+  args.length === 0 || (args.length === 1 && (command === 'help' || command === '--help'));
+if (help) {
+  console.log(usage);
+} else if (!command || args.length !== requiredArity[command]) {
   console.error(
-    'Unsupported command or extra argument. No flags, including --dry-run, are accepted. Nothing was applied.',
+    'Unsupported command or extra argument. Operation flags, including --dry-run, are not accepted. Nothing was applied.',
   );
+  console.error(usage);
   process.exitCode = 2;
 } else if (command === 'prepare') {
   const fixture = await createFixture('manual');
@@ -48,6 +68,7 @@ if (!command || args.length !== requiredArity[command]) {
     `Local confirmation (label is not authentication):\npnpm lab approve ${fixture.id} ${candidate.commit} ${digest(evidence)}`,
   );
   console.log(`Then separately apply: pnpm lab apply ${fixture.id}`);
+  console.log(`Then observe the current ref: pnpm lab reconcile ${fixture.id}`);
 } else if (
   ['show', 'approve', 'apply', 'reconcile'].includes(command ?? '') &&
   id &&
@@ -92,8 +113,7 @@ if (!command || args.length !== requiredArity[command]) {
   if (command === 'reconcile')
     console.log(JSON.stringify(await reconcile(fixture, candidate), null, 2));
 } else {
-  console.error(
-    'Usage: pnpm lab prepare | show <fixture> | approve <fixture> <commit> <evidence-digest> | apply <fixture> | reconcile <fixture>',
-  );
+  console.error('Invalid generated fixture identifier. Nothing was applied.');
+  console.error(usage);
   process.exitCode = 2;
 }

@@ -41,7 +41,7 @@ flowchart LR
 
 ## 사람이 직접 승인하는 흐름
 
-`pnpm lab prepare`를 실행한 뒤 diff, 정확한 후보 커밋, 필수 검사, 근거 digest와 원본 `review.json`을 확인합니다. 준비 명령은 다음 형식의 정확한 실행 명령을 출력합니다.
+저장소 루트에서 `pnpm lab prepare`를 실행한 뒤 diff, 정확한 후보 커밋, 필수 검사, 근거 digest와 원본 `review.json`을 확인합니다. 다른 폴더에서는 `pnpm --dir /저장소/경로 lab <명령>`을 사용하세요. 준비 명령은 다음 형식의 정확한 실행 명령을 출력합니다.
 
 ```text
 pnpm lab approve <생성된-fixture-id> <후보-커밋> <근거-digest>
@@ -50,6 +50,8 @@ pnpm lab reconcile <생성된-fixture-id>
 ```
 
 확인 값이 다르면 승인을 거절합니다. 근거는 검증 시작 5분 후 만료되므로 오래 지났다면 새 예제를 준비합니다. `approve`는 로컬 결정만 기록합니다. `apply`는 해당 bare 저장소의 `refs/heads/release`만 갱신합니다. 표시된 검토자 이름은 사용자 인증이 아닙니다.
+
+`pnpm lab`, `pnpm lab help`, `pnpm lab --help`는 사용법만 표시하고 정상 종료합니다. 예제 저장소를 만들거나 승인·반영하지 않습니다. 추가 인자와 `apply <fixture> --dry-run` 같은 작업 옵션은 계속 오류로 처리하며, 작업 명령 뒤에 `--help`를 붙여도 이 규칙을 우회하지 못합니다.
 
 다섯 사례의 보고서는 스크립트가 승인하며 실행 기록에도 표시합니다. 만료 사례는 평가 시각을 주입하고 실제 5분을 기다렸다고 주장하지 않습니다. 프로세스 경쟁, 컴파일러 실행과 Git 변경은 실제 로컬 I/O입니다.
 

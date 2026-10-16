@@ -41,7 +41,7 @@ Fixture repositories use an empty Git template and isolated global/system config
 
 ## Manual approval
 
-Run `pnpm lab prepare`, then inspect the diff, exact candidate commit, required checks, evidence digest and raw `review.json`. Preparation prints exact commands in this form:
+Run `pnpm lab prepare` from the repository root, then inspect the diff, exact candidate commit, required checks, evidence digest and raw `review.json`. From another directory, use `pnpm --dir /path/to/verified-change-lab lab <command>`. Preparation prints exact commands in this form:
 
 ```text
 pnpm lab approve <generated-fixture-id> <candidate-commit> <evidence-digest>
@@ -50,6 +50,8 @@ pnpm lab reconcile <generated-fixture-id>
 ```
 
 Incorrect confirmation refuses approval. Evidence expires five minutes after verification starts; prepare a new fixture if it expires. `approve` records a local decision. `apply` only updates `refs/heads/release` in that fixture's bare repository. The reviewer label is not identity verification.
+
+`pnpm lab`, `pnpm lab help` and `pnpm lab --help` print usage and exit successfully without creating a fixture or approving/applying anything. Extra arguments and operation flags such as `apply <fixture> --dry-run` remain errors; appending `--help` to an operation does not bypass that rule.
 
 The five-case report uses scripted approvals, clearly labeled in its transcript. Its expiry case injects evaluation time and does not claim to have waited five minutes. Process competition, compiler runs and Git effects use actual local I/O.
 
