@@ -10,6 +10,7 @@ import {
   FILES,
   FIXTURE_SOURCE,
   git,
+  isolatedGitEnvironment,
   materializeCandidate,
   prepareCandidate,
   RELEASE_REF,
@@ -352,15 +353,16 @@ export async function provenance() {
   const revision = await boundedProcess(
     'git',
     ['--git-dir', join(PROJECT, '.git'), 'rev-parse', 'HEAD'],
-    { cwd: PROJECT, timeoutMs: 3000, maxOutputBytes: 2000 },
+    { cwd: PROJECT, env: isolatedGitEnvironment(), timeoutMs: 3000, maxOutputBytes: 2000 },
   );
   const status = await boundedProcess(
     'git',
     ['--git-dir', join(PROJECT, '.git'), '--work-tree', PROJECT, 'status', '--porcelain'],
-    { cwd: PROJECT, timeoutMs: 3000, maxOutputBytes: 8000 },
+    { cwd: PROJECT, env: isolatedGitEnvironment(), timeoutMs: 3000, maxOutputBytes: 8000 },
   );
   const gitVersion = await boundedProcess('git', ['--version'], {
     cwd: PROJECT,
+    env: isolatedGitEnvironment(),
     timeoutMs: 3000,
     maxOutputBytes: 1000,
   });

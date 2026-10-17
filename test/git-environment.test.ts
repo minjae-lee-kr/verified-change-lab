@@ -8,7 +8,7 @@ import { PROJECT, sha256 } from '../src/support.ts';
 import type { Fixture } from '../src/types.ts';
 
 test(
-  'ambient Git storage and configuration cannot redirect generated fixtures',
+  'ambient Git settings cannot redirect fixture mutations or provenance reads',
   { timeout: 30_000 },
   async (t) => {
     const sentinel = await mkdtemp(join(tmpdir(), 'verified-change-git-env-'));
@@ -117,5 +117,33 @@ test(
         assert.equal(result.current, result.candidateCommit);
       } else assert.equal(result.current, result.fixture.base);
     }
+    const readProvenance = async (environment: NodeJS.ProcessEnv) => {
+      const child = await boundedProcess(
+        process.execPath,
+        [join(PROJECT, 'test/git-environment-worker.ts'), 'provenance'],
+        { cwd: PROJECT, env: environment, timeoutMs: 5000, maxOutputBytes: 32_000 },
+      );
+      assert.equal(child.exitCode, 0, child.stderr);
+      return JSON.parse(child.stdout) as {
+        gitRevision: string | null;
+        gitDirty: boolean | null;
+        sourceFingerprint: string;
+      };
+    };
+    const cleanProvenance = await readProvenance(cleanEnvironment);
+    const taintedProvenance = await readProvenance({
+      ...cleanEnvironment,
+      GIT_COMMON_DIR: repository,
+      GIT_TRACE: join(sentinel, 'provenance-trace-must-not-exist.txt'),
+    });
+    // Source archives legitimately omit .git; their absent Git provenance must
+    // stay absent rather than inheriting another repository's metadata.
+    assert.ok(
+      cleanProvenance.gitRevision === null || /^[a-f0-9]{40}$/.test(cleanProvenance.gitRevision),
+    );
+    assert.ok(cleanProvenance.gitDirty === null || typeof cleanProvenance.gitDirty === 'boolean');
+    assert.match(cleanProvenance.sourceFingerprint, /^[a-f0-9]{64}$/);
+    assert.deepEqual(taintedProvenance, cleanProvenance);
+    assert.deepEqual(await snapshot(sentinel), before, 'provenance leaves sentinel untouched');
   },
 );

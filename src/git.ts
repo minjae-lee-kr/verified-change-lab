@@ -25,7 +25,7 @@ const config = {
 };
 // Git can redirect objects, refs, configuration and trace files independently of
 // --git-dir. Keep ordinary runtime variables, but rebuild Git's environment.
-const isolatedGitEnvironment = (): NodeJS.ProcessEnv => ({
+export const isolatedGitEnvironment = (): NodeJS.ProcessEnv => ({
   ...Object.fromEntries(Object.entries(process.env).filter(([name]) => !/^GIT_/i.test(name))),
   GIT_CONFIG_NOSYSTEM: '1',
   GIT_CONFIG_GLOBAL: process.platform === 'win32' ? 'NUL' : '/dev/null',
