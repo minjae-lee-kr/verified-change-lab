@@ -49,6 +49,11 @@ The [design notes](docs/design.md) explain evidence coverage, process cleanup, t
 
 Checking a fixed commit requires storage for its snapshots and a fresh review when the candidate or policy changes. This experiment updates a local Git ref; deployment would need its own controls.
 
+A [separate state-envelope experiment](docs/state-envelope.md) asks what changes when
+the selected code and its operation receipt live in one immutable state commit.
+It compares interrupted writes and two kinds of rollback. Keeping the receipt comes
+at a cost: readers must resolve a metadata ref, and writers must preserve its history.
+
 ## Try an explicit manual approval
 
 ```sh

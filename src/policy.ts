@@ -28,6 +28,8 @@ const CONTROL_FILES = [
   'src/protocol.ts',
   'src/executor.ts',
   'src/execution.ts',
+  'src/state-envelope.ts',
+  'src/state-envelope-worker.ts',
   'src/cli.ts',
   'package.json',
   'pnpm-lock.yaml',

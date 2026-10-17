@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test test/*.test.ts",
     "experiment": "node src/experiment.ts",
+    "state:experiment": "node src/state-envelope-experiment.ts",
     "lab": "node src/cli.ts",
     "serve": "node src/server.ts",
     "format": "prettier --write .",
