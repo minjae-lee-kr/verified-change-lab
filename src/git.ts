@@ -23,17 +23,31 @@ const config = {
   },
   files: ['src/retry-policy.ts'],
 };
+// Git can redirect objects, refs, configuration and trace files independently of
+// --git-dir. Keep ordinary runtime variables, but rebuild Git's environment.
 const isolatedGitEnvironment = (): NodeJS.ProcessEnv => ({
-  ...process.env,
+  ...Object.fromEntries(Object.entries(process.env).filter(([name]) => !/^GIT_/i.test(name))),
   GIT_CONFIG_NOSYSTEM: '1',
   GIT_CONFIG_GLOBAL: process.platform === 'win32' ? 'NUL' : '/dev/null',
   GIT_TERMINAL_PROMPT: '0',
 });
+// These overrides are supplied only by the fixed fixture builders below.
+type GitEnvironment = Partial<
+  Record<
+    | 'GIT_INDEX_FILE'
+    | 'GIT_WORK_TREE'
+    | 'GIT_AUTHOR_NAME'
+    | 'GIT_AUTHOR_EMAIL'
+    | 'GIT_COMMITTER_NAME'
+    | 'GIT_COMMITTER_EMAIL',
+    string
+  >
+>;
 
 export async function git(
   fixture: Fixture,
   args: string[],
-  extraEnv: NodeJS.ProcessEnv = {},
+  extraEnv: GitEnvironment = {},
   acceptFailure = false,
 ): Promise<ProcessResult> {
   await assertOwnedPath(fixture.repository);

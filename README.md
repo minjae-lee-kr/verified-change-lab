@@ -57,7 +57,7 @@ Review the printed diff, exact commit, required checks and evidence digest. The 
 
 Original synthetic source; no employer implementation, production results or LLM calls. This demonstrates a change-control boundary useful to automated tooling, not a model's capabilities.
 
-All Git mutations stay in generated repositories under the ignored `.lab/` directory. No command accepts a user repository, publishes a branch or deploys code. Raw evidence stays in `.lab/`; a report with local paths sanitized is written to `dist/report.json`, with source fingerprints, runtime versions and Git dirty-state provenance.
+All Git mutations stay in generated repositories under the ignored `.lab/` directory. Git subprocesses discard inherited `GIT_*` variables so ambient object paths and configuration cannot redirect these fixture commands. No command accepts a user repository, publishes a branch or deploys code. Raw evidence stays in `.lab/`; a report with local paths sanitized is written to `dist/report.json`, with source fingerprints, runtime versions and Git dirty-state provenance.
 
 The runner trusts its local source and processes. It is **not a sandbox or authenticated approval system**; local writers can forge unsigned records. A successful conditional ref update is **not a one-time execution guarantee**: the A-B-A test demonstrates the limit. The five-case report verifies its declared fixture contract, not general correctness. [Full boundaries and tradeoffs](docs/design.md#boundaries-and-tradeoffs).
 
