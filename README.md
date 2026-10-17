@@ -54,6 +54,11 @@ the selected code and its operation receipt live in one immutable state commit.
 It compares interrupted writes and two kinds of rollback. Keeping the receipt comes
 at a cost: readers must resolve a metadata ref, and writers must preserve its history.
 
+The [approval-expiry experiment](docs/approval-expiry.md) examines the next boundary:
+approval can be fresh at the last check and expired before Git commits the change.
+Pausing a real Git transaction and advancing the worker's logical clock separates
+permission to start from a deadline to finish.
+
 ## Try an explicit manual approval
 
 ```sh
