@@ -38,6 +38,9 @@ const copy = {
     failed: 'Unexpected observation',
     expected: 'Expected',
     all: 'Declared outcomes matched the captured run.',
+    unestablishedTitle: 'This run did not establish the expected result.',
+    unestablishedDescription:
+      'One or more captured observations differed from the declared expectations. Inspect the values and raw transcript below before drawing a conclusion.',
     facts: 'Inspect evidence and decisions',
     raw: 'Inspect raw command transcript',
     limitsLabel: 'THE BOUNDARY IS PART OF THE RESULT',
@@ -50,6 +53,7 @@ const copy = {
     source: 'Source manifest and runtime provenance',
     dirty: 'working tree changed',
     clean: 'clean source revision',
+    statusUnavailable: 'Git status unavailable',
     noGit: 'source not committed at run time',
     cases: {
       drift: [
@@ -147,6 +151,9 @@ const copy = {
     failed: '예상과 다른 결과',
     expected: '예상',
     all: '선언한 결과가 실제 실행 기록과 일치했습니다.',
+    unestablishedTitle: '이번 실행에서는 예상한 결과를 확인하지 못했습니다.',
+    unestablishedDescription:
+      '기록된 관측 중 하나 이상이 선언한 예상과 달랐습니다. 결론을 내리기 전에 아래 관측값과 원시 실행 기록을 확인하세요.',
     facts: '검증 근거와 판단 상세 보기',
     raw: '원시 명령 실행 기록 보기',
     limitsLabel: '확인한 범위와 한계를 함께',
@@ -159,6 +166,7 @@ const copy = {
     source: '소스 파일 목록과 실행 환경 보기',
     dirty: '작업 폴더에 변경 있음',
     clean: '커밋과 소스 일치',
+    statusUnavailable: 'Git 작업 폴더 상태 확인 불가',
     noGit: '실행 시점에 커밋되지 않은 소스',
     cases: {
       drift: [
@@ -311,7 +319,7 @@ function render() {
     ),
     element('span', good ? 'status' : 'status fail', good ? t.checked : t.failed),
   );
-  const title = element('h2', '', text[1]);
+  const title = element('h2', '', good ? text[1] : t.unestablishedTitle);
   title.id = 'case-title';
   const observations = element('dl', 'observations');
   for (const item of data.observations) {
@@ -345,16 +353,18 @@ function render() {
   $('case-panel').replaceChildren(
     top,
     title,
-    element('p', 'description', text[2]),
-    element('p', 'insight', text[3]),
+    element('p', 'description', good ? text[2] : t.unestablishedDescription),
+    ...(good ? [element('p', 'insight', text[3])] : []),
     observations,
     element('p', 'outcome', good ? t.all : t.failed),
     details('facts', t.facts, data.facts),
     details('raw', t.raw, data.transcripts),
   );
   const p = report.provenance;
+  const gitStatus =
+    p.gitDirty === true ? t.dirty : p.gitDirty === false ? t.clean : t.statusUnavailable;
   $('provenance').textContent =
-    `${t.generated} ${new Date(report.generatedAt).toLocaleString(language === 'ko' ? 'ko-KR' : 'en-US')} · ${p.nodeVersion} · ${p.gitVersion} · ${p.gitRevision ? `${p.gitRevision.slice(0, 12)} (${p.gitDirty ? t.dirty : t.clean})` : t.noGit}`;
+    `${t.generated} ${new Date(report.generatedAt).toLocaleString(language === 'ko' ? 'ko-KR' : 'en-US')} · ${p.nodeVersion} · ${p.gitVersion} · ${p.gitRevision ? `${p.gitRevision.slice(0, 12)} (${gitStatus})` : t.noGit}`;
   $('fingerprint').textContent = `${t.fingerprint} ${p.sourceFingerprint}`;
   $('source-files').textContent = JSON.stringify(p, null, 2);
 }
