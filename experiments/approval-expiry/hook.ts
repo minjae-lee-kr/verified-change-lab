@@ -9,7 +9,7 @@ try {
   if (
     process.argv.length !== 4 ||
     !directory ||
-    !['prepared', 'committed', 'aborted'].includes(phase ?? '')
+    !['preparing', 'prepared', 'committed', 'aborted'].includes(phase ?? '')
   )
     throw new Error('Expected an owned hook directory and one Git transaction phase.');
   await assertOwnedPath(directory);
@@ -27,7 +27,10 @@ try {
     (JSON.parse(await readFile(join(directory, 'clock.json'), 'utf8')) as { now: number }).now;
   const detail = { phase, stdin, logicalNow: await logicalNow() };
   await record(directory, 'git-hook', detail);
-  if (phase === 'prepared') {
+  // Git 2.54+ calls this before locking refs. Only `prepared` pauses selection.
+  if (phase === 'preparing') {
+    // The transaction input has already been checked above.
+  } else if (phase === 'prepared') {
     await publish(join(directory, 'prepared.json'), detail);
     const release = await waitMarker(join(directory, 'release.json'), AbortSignal.timeout(3500));
     if (JSON.stringify(release) !== JSON.stringify({ continue: 'prepared' }))

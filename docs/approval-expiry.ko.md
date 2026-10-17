@@ -20,6 +20,10 @@ hook은 반환 직전과 Git의 `committed` 단계에서 만료된 논리 시각
 worker의 완료 응답과 새로 읽은 ref·상태도 일치합니다. 제한 시간은 실패를 끝내는
 상한일 뿐, 순서를 맞추기 위한 대기 시간이 아닙니다.
 
+Git 2.54부터는 ref를 잠그기 전 `preparing` 단계도 호출합니다. hook은 이 단계에서
+멈추지 않고 관측만 기록합니다. 해당 기록이 있으면 검사기는 순서와 트랜잭션을
+대조하며, 이후의 `prepared` 중지 지점과 `committed` 관측은 여전히 필수입니다.
+
 ## 실행과 근거 확인
 
 README의 Node·Git·pnpm 요건을 갖춘 뒤 저장소 루트에서 실행합니다.
@@ -56,6 +60,6 @@ hook은 관측을 위한 장치이지, 운영용 승인 방법의 제안이 아�
 작성자, 전원 차단, 인증된 승인에 대한 보장은 없습니다. 기존 다섯 사례와 승인 사용
 기록 실험의 원본은 각각 당시 소스 리비전을 유지합니다.
 
-Git 문서의 [prepared·committed 단계](https://git-scm.com/docs/githooks/2.53.0#_reference_transaction)와
+Git 문서의 [트랜잭션 단계](https://git-scm.com/docs/githooks/2.54.0#_reference_transaction)와
 [`update-ref`의 이전 값 조건](https://git-scm.com/docs/git-update-ref)을 근거로 삼습니다.
 어느 쪽도 CAS에 애플리케이션의 만료 시각 조건을 추가하지 않습니다.

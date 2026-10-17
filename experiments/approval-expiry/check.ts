@@ -117,8 +117,28 @@ function checkCase(item: ExpiryCase, after: boolean) {
   );
   same(prepared.receipt, expectedReceipt, 'prepared receipt');
 
+  // Git 2.54+ emits `preparing` before locking refs. Preserve that raw event,
+  // but validate its identity, time and position before comparing the shared
+  // prepared/committed sequence. It cannot replace the prepared barrier.
+  const events = [...item.events];
+  if (
+    after &&
+    events[4]?.event === 'git-hook' &&
+    (events[4].detail as { phase?: string })?.phase === 'preparing'
+  ) {
+    same(
+      events[4].detail,
+      {
+        phase: 'preparing',
+        stdin: `${initial.oid} ${prepared.next.oid} ${STATE_REF}\n`,
+        logicalNow: item.logicalFresh,
+      },
+      'optional preparing observation must bind this fresh transaction',
+    );
+    events.splice(4, 1);
+  }
   // Exact local event order is declared independently of the producer's summary.
-  const eventNames = item.events.map((entry) =>
+  const eventNames = events.map((entry) =>
     entry.event === 'worker-phase'
       ? `worker:${(entry.detail as { phase: string }).phase}`
       : entry.event,
@@ -149,23 +169,23 @@ function checkCase(item: ExpiryCase, after: boolean) {
         ],
     'missing, duplicate or reordered causal observation',
   );
-  same(item.events[0]!.detail, { phase: 'ready', detail: { mode: 'envelope' } }, 'worker mode');
+  same(events[0]!.detail, { phase: 'ready', detail: { mode: 'envelope' } }, 'worker mode');
   same(
-    item.events[1]!.detail,
+    events[1]!.detail,
     { caller: 'prepareStateChange', now: item.logicalFresh },
     'prepare clock read',
   );
-  same(item.events[2]!.detail, { phase: 'state-prepared', detail: prepared }, 'worker IPC plan');
-  const reads = item.events.filter((entry) => entry.event === 'worker-clock-read');
+  same(events[2]!.detail, { phase: 'state-prepared', detail: prepared }, 'worker IPC plan');
+  const reads = events.filter((entry) => entry.event === 'worker-clock-read');
   same(
     reads[1]!.detail,
     { caller: 'selectPreparedState', now: after ? item.logicalFresh : item.logicalExpired },
     'final freshness-check instant',
   );
-  const advanced = item.events.find((entry) => entry.event === 'parent-advanced-clock');
+  const advanced = events.find((entry) => entry.event === 'parent-advanced-clock');
   same(advanced?.detail, { now: item.logicalExpired }, 'clock advance missing or within lifetime');
   same(
-    item.events.at(-1)!.detail,
+    events.at(-1)!.detail,
     { exitCode: after ? 0 : 1, directChildExitConfirmed: true },
     'exit event',
   );
@@ -217,18 +237,14 @@ function checkCase(item: ExpiryCase, after: boolean) {
   );
   const stdin = `${initial.oid} ${prepared.next.oid} ${STATE_REF}\n`;
   same(
-    item.events[4]!.detail,
+    events[4]!.detail,
     { phase: 'prepared', stdin, logicalNow: item.logicalFresh },
     'actual Git prepared transaction',
   );
-  same(item.events[5]!.detail, { oid: initial.oid }, 'held ref event');
+  same(events[5]!.detail, { oid: initial.oid }, 'held ref event');
+  same(events[7]!.detail, { logicalNow: item.logicalExpired }, 'hook release was not after expiry');
   same(
-    item.events[7]!.detail,
-    { logicalNow: item.logicalExpired },
-    'hook release was not after expiry',
-  );
-  same(
-    item.events[8]!.detail,
+    events[8]!.detail,
     { phase: 'committed', stdin, logicalNow: item.logicalExpired },
     'actual Git committed observation after expiry',
   );
@@ -237,7 +253,7 @@ function checkCase(item: ExpiryCase, after: boolean) {
     ['update-ref', STATE_REF, prepared.next.oid, initial.oid],
     'CAS binds exact expected/next ref',
   );
-  const selection = item.events[9]!.detail as {
+  const selection = events[9]!.detail as {
     phase: string;
     detail: { stateOid: string; result: { code: string; process: ProcessResult } };
   };

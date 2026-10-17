@@ -21,6 +21,10 @@ then observes the expired logical clock before returning, and again in Git's
 `committed` phase. The worker acknowledgement and a fresh ref/state read agree.
 The timeout is a failure bound, never the mechanism used to choose this order.
 
+Git 2.54 and later also emit `preparing`, before refs are locked. The hook records
+that phase without pausing; the checker validates its position and transaction if
+present. It still requires the later `prepared` barrier and `committed` observation.
+
 ## Run and inspect
 
 From the repository root, with the README's Node/Git/pnpm requirements:
@@ -58,6 +62,6 @@ The selected object is one local Git ref, not a deployment or external action.
 No claim covers clock skew, hostile writers, power loss or authenticated approval.
 The original five-case and state-envelope captures retain their own revisions.
 
-Git documents the hook's [prepared and committed phases](https://git-scm.com/docs/githooks/2.53.0#_reference_transaction)
+Git documents the hook's [transaction phases](https://git-scm.com/docs/githooks/2.54.0#_reference_transaction)
 and [`update-ref`'s old-value condition](https://git-scm.com/docs/git-update-ref).
 Neither adds an application expiry predicate to CAS.

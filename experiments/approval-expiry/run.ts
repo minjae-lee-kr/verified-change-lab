@@ -3,7 +3,7 @@ import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { provenance } from '../../src/experiment.ts';
 import { createFixture, prepareCandidate } from '../../src/git.ts';
-import { boundedProcess } from '../../src/process.ts';
+import { boundedProcess, processSucceeded } from '../../src/process.ts';
 import { approveCandidate } from '../../src/protocol.ts';
 import { verifyCandidate } from '../../src/runner.ts';
 import {
@@ -200,6 +200,11 @@ export async function runExpiryCases(cases: ExpiryCase[] = []): Promise<ExpiryCa
         },
       );
       await Promise.all(handlers);
+      // Preserve an observed worker failure before cancelling an unused watcher.
+      if (afterCheck && !processSucceeded(item.process))
+        handlerFailure ??= new Error(
+          `Worker failed before completing the Git gate: ${item.process.stderr.trim()}`,
+        );
       // A missing hook must not leave a watcher behind after an early worker failure.
       cancellation.abort();
       await gate;
