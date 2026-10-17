@@ -54,7 +54,7 @@ const copy = {
     dirty: 'working tree changed',
     clean: 'clean source revision',
     statusUnavailable: 'Git status unavailable',
-    noGit: 'source not committed at run time',
+    noGit: 'Git revision unavailable',
     cases: {
       drift: [
         'Workspace drift',
@@ -167,7 +167,7 @@ const copy = {
     dirty: '작업 폴더에 변경 있음',
     clean: '커밋과 소스 일치',
     statusUnavailable: 'Git 작업 폴더 상태 확인 불가',
-    noGit: '실행 시점에 커밋되지 않은 소스',
+    noGit: 'Git 커밋 정보 확인 불가',
     cases: {
       drift: [
         '검사 후 코드 변경',
