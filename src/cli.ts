@@ -45,6 +45,7 @@ if (help) {
   const fixture = await createFixture('manual');
   const candidate = await prepareCandidate(fixture);
   const evidence = await verifyCandidate(fixture, candidate);
+  const decision = evidenceVerdict(evidence, candidate, await currentPolicy());
   await writeJson(join(fixture.root, 'review.json'), { fixture, candidate, evidence });
   console.log(
     (await git(fixture, ['diff', candidate.base, candidate.commit, '--', 'src/retry-policy.ts']))
@@ -53,7 +54,7 @@ if (help) {
   console.log(
     JSON.stringify(
       {
-        decision: evidenceVerdict(evidence, candidate, await currentPolicy()),
+        decision,
         candidate,
         evidenceDigest: digest(evidence),
         expiresAt: new Date(evidence.expiresAt).toISOString(),
@@ -64,11 +65,13 @@ if (help) {
     ),
   );
   console.log(`Review raw evidence in .lab/${fixture.id}/review.json. No release ref has changed.`);
-  console.log(
-    `Local confirmation (label is not authentication):\npnpm lab approve ${fixture.id} ${candidate.commit} ${digest(evidence)}`,
-  );
-  console.log(`Then separately apply: pnpm lab apply ${fixture.id}`);
-  console.log(`Then observe the current ref: pnpm lab reconcile ${fixture.id}`);
+  if (decision.ok) {
+    console.log(
+      `Local confirmation (label is not authentication):\npnpm lab approve ${fixture.id} ${candidate.commit} ${digest(evidence)}`,
+    );
+    console.log(`Then separately apply: pnpm lab apply ${fixture.id}`);
+    console.log(`Then observe the current ref: pnpm lab reconcile ${fixture.id}`);
+  } else process.exitCode = 2;
 } else if (
   ['show', 'approve', 'apply', 'reconcile'].includes(command ?? '') &&
   id &&

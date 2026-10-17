@@ -12,7 +12,7 @@ import {
   commitWorkspace,
 } from '../src/git.ts';
 import { currentPolicy } from '../src/policy.ts';
-import { boundedProcess } from '../src/process.ts';
+import { boundedProcess, processSucceeded } from '../src/process.ts';
 import { applyApproved, approveCandidate, evidenceVerdict } from '../src/protocol.ts';
 import { verifyCandidate } from '../src/runner.ts';
 import { digest, redacted, PROJECT, runId, writeJson } from '../src/support.ts';
@@ -86,6 +86,16 @@ test('failed and malformed checker data cannot be upgraded by exit code zero', (
   const changed = structuredClone(evidence);
   (changed.results[0]!.report as CheckReport).sourceConsistent = false;
   assert.equal(evidenceVerdict(changed, candidate, policy).code, 'SOURCE_CHANGED');
+});
+
+test('pipe failure cannot be accepted with a complete report and exit zero', () => {
+  const incomplete = structuredClone(evidence);
+  const result = incomplete.results[0]!;
+  assert.equal(result.process.exitCode, 0);
+  assert.equal(processSucceeded(result.process), true);
+  result.process.processError = { source: 'stdout', code: 'EIO', message: 'Controlled pipe loss' };
+  assert.equal(processSucceeded(result.process), false);
+  assert.equal(evidenceVerdict(incomplete, candidate, policy).code, 'PROCESS_IO_ERROR');
 });
 
 test('local approval requires an exact explicit confirmation and does not mutate the ref', async () => {

@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { git, currentRef, RELEASE_REF } from './git.ts';
 import { currentPolicy } from './policy.ts';
+import { processSucceeded } from './process.ts';
 import { digest, trace, writeJson } from './support.ts';
 import type {
   Approval,
@@ -87,6 +88,8 @@ export function evidenceVerdict(
         'Verifier request does not belong to this evidence run.',
       );
     const process = result.process;
+    if (process.processError !== undefined)
+      return verdict(false, 'PROCESS_IO_ERROR', 'A required checker process or its I/O failed.');
     if (process.timedOut)
       return verdict(
         false,
@@ -277,21 +280,17 @@ export async function applyApproved(
     {},
     true,
   );
-  const decision =
-    result.exitCode === 0 &&
-    !result.timedOut &&
-    !result.outputLimited &&
-    result.directChildExitConfirmed
-      ? verdict(
-          true,
-          'CAS_APPLIED',
-          'Git accepted one conditional local ref-pointer update. No deployment or working-tree update occurred.',
-        )
-      : verdict(
-          false,
-          'CAS_NOT_ACKNOWLEDGED',
-          'The conditional ref update did not return a successful acknowledgement. Observe the ref before deciding what happened.',
-        );
+  const decision = processSucceeded(result)
+    ? verdict(
+        true,
+        'CAS_APPLIED',
+        'Git accepted one conditional local ref-pointer update. No deployment or working-tree update occurred.',
+      )
+    : verdict(
+        false,
+        'CAS_NOT_ACKNOWLEDGED',
+        'The conditional ref update did not return a successful acknowledgement. Observe the ref before deciding what happened.',
+      );
   await trace(fixture.root, 'apply-command-outcome', decision);
   return decision;
 }

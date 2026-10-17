@@ -46,6 +46,7 @@ export type ProcessResult = {
   outputLimited: boolean;
   directChildExitConfirmed: boolean;
   ownedTreeTerminationAcknowledged: boolean | null;
+  processError?: { source: 'child' | 'stdout' | 'stderr'; code: string | null; message: string };
 };
 export type Transcript = { sequence: number; event: string; detail: unknown }[];
 export type Policy = {

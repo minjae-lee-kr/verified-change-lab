@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { boundedProcess } from './process.ts';
+import { boundedProcess, processSucceeded } from './process.ts';
 import { assertOwnedPath, ensureLab, LAB, runId, trace, within, writeJson } from './support.ts';
 import type { Candidate, Fixture, ProcessResult } from './types.ts';
 
@@ -64,13 +64,7 @@ export async function git(
     },
   );
   await trace(fixture.root, 'git', result);
-  if (
-    !acceptFailure &&
-    (result.exitCode !== 0 ||
-      result.timedOut ||
-      result.outputLimited ||
-      !result.directChildExitConfirmed)
-  )
+  if (!acceptFailure && !processSucceeded(result))
     throw new Error(`Fixture Git command failed: ${args[0]}: ${result.stderr.trim()}`);
   return result;
 }
@@ -128,7 +122,7 @@ export async function createFixture(label: string): Promise<Fixture> {
     { cwd: root, timeoutMs: 5000, maxOutputBytes: 64_000, env: isolatedGitEnvironment() },
   );
   await trace(root, 'git-init-synthetic-fixture', initialized);
-  if (initialized.exitCode !== 0)
+  if (!processSucceeded(initialized))
     throw new Error('Could not initialize the owned synthetic fixture.');
   await writeFile(join(workspace, FILES[0]), FIXTURE_SOURCE.base);
   await writeJson(join(workspace, FILES[1]), config);

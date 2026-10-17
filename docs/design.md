@@ -43,6 +43,8 @@ An explicit `--git-dir` does not by itself isolate Git storage: inherited `GIT_C
 
 On Windows, owned fixture commands pass `-c core.longpaths=true` without changing user configuration files. This enables [certain Git operations on long paths](https://gitforwindows.org/faq); it does not remove all directory initialization or process path limits. If those stages fail with a long-path error, use a shorter checkout path.
 
+A checker startup or pipe failure leaves verification incomplete; `prepare` keeps the evidence for inspection, exits unsuccessfully and omits approval commands.
+
 <a id="manual-approval"></a>
 
 ## Manual approval

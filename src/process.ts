@@ -4,7 +4,7 @@ import { redacted } from './support.ts';
 
 /** Terminates a process tree created by this runner. Trusted fixture code only; not a sandbox. */
 export async function stopOwnedTree(child: ChildProcess): Promise<boolean> {
-  if (!child.pid || child.exitCode !== null || child.signalCode !== null) return true;
+  if (!child.pid || child.exitCode !== null || child.signalCode !== null) return false;
   if (process.platform === 'win32') {
     return new Promise<boolean>((resolve) => {
       const killer = spawn('taskkill', ['/PID', String(child.pid), '/T', '/F'], {
@@ -38,6 +38,14 @@ export async function stopOwnedTree(child: ChildProcess): Promise<boolean> {
   }
 }
 
+export const processSucceeded = (result: ProcessResult): boolean =>
+  result.exitCode === 0 &&
+  result.signal === null &&
+  !result.timedOut &&
+  !result.outputLimited &&
+  result.directChildExitConfirmed &&
+  result.processError === undefined;
+
 export async function boundedProcess(
   executable: string,
   args: string[],
@@ -64,6 +72,8 @@ export async function boundedProcess(
     let outputLimited = false;
     let settled = false;
     let killStarted = false;
+    let exitObserved = false;
+    let processError: ProcessResult['processError'];
     let termination: Promise<boolean> | undefined;
     let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
     const finish = (
@@ -88,16 +98,21 @@ export async function boundedProcess(
         outputLimited,
         directChildExitConfirmed,
         ownedTreeTerminationAcknowledged,
+        ...(processError ? { processError } : {}),
       });
     };
     const terminate = () => {
       if (killStarted || settled) return;
       killStarted = true;
       clearTimeout(timer);
-      termination = stopOwnedTree(child);
+      if (!child.pid) {
+        finish(null, null, false);
+        return;
+      }
+      if (child.exitCode === null && child.signalCode === null) termination = stopOwnedTree(child);
       cleanupTimer = setTimeout(() => {
-        child.kill('SIGKILL');
-        finish(child.exitCode, child.signalCode, false, false);
+        if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+        finish(child.exitCode, child.signalCode, exitObserved, termination ? false : null);
       }, 3500);
     };
     const receive = (buffer: Buffer, stream: 'stdout' | 'stderr') => {
@@ -111,15 +126,30 @@ export async function boundedProcess(
         terminate();
       }
     };
-    child.stdout!.on('data', (buffer) => receive(buffer, 'stdout'));
-    child.stderr!.on('data', (buffer) => receive(buffer, 'stderr'));
+    const recordError = (source: 'child' | 'stdout' | 'stderr', error: Error) => {
+      // Pipe errors are separate from the child's actual exit code. Keep the
+      // listener after settlement so a late stream error cannot crash the caller.
+      if (settled) return;
+      const message = redacted(error.message).slice(0, 1024);
+      processError ??= {
+        source,
+        code: 'code' in error && typeof error.code === 'string' ? error.code.slice(0, 80) : null,
+        message,
+      };
+      receive(Buffer.from(`[${source}] ${message}\n`), 'stderr');
+      if (child.pid) terminate();
+    };
+    child.stdout?.on('data', (buffer) => receive(buffer, 'stdout'));
+    child.stderr?.on('data', (buffer) => receive(buffer, 'stderr'));
+    child.stdout?.on('error', (error) => recordError('stdout', error));
+    child.stderr?.on('error', (error) => recordError('stderr', error));
     child.on('message', (message) => options.ipc?.onMessage(message, child, terminate));
-    child.once('error', (error) => {
-      stderr += error.message;
-      finish(null, null, true);
+    child.on('error', (error) => recordError('child', error));
+    child.once('exit', () => {
+      exitObserved = true;
     });
     child.once('close', async (code, signal) =>
-      finish(code, signal, true, termination ? await termination : null),
+      finish(child.pid ? code : null, signal, exitObserved, termination ? await termination : null),
     );
     const timer = setTimeout(() => {
       timedOut = true;

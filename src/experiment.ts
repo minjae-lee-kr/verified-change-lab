@@ -16,7 +16,7 @@ import {
   RELEASE_REF,
 } from './git.ts';
 import { currentPolicy } from './policy.ts';
-import { boundedProcess } from './process.ts';
+import { boundedProcess, processSucceeded } from './process.ts';
 import { applyApproved, approveCandidate, evidenceVerdict, reconcile } from './protocol.ts';
 import { verifyCandidate } from './runner.ts';
 import {
@@ -200,7 +200,11 @@ export async function runExperiments(): Promise<CaseResult[]> {
       observation('checkerExit', 0, emptyEvidence.results[0]!.process.exitCode),
       observation('approvalDecision', 'INCOMPLETE_CHECKS', emptyApproval.verdict.code),
       observation('releaseUnchanged', emptyFixture.base, await currentRef(emptyFixture)),
-      observation('candidateControlledCompiler', 0, naiveCompiler.exitCode),
+      observation(
+        'candidateControlledCompiler',
+        0,
+        processSucceeded(naiveCompiler) ? naiveCompiler.exitCode : 'PROCESS_INCOMPLETE',
+      ),
       observation('trustedCompiler', 2, trustedEvidence.results[1]!.process.exitCode),
       observation('weakenedPolicyDecision', 'CHECK_FAILED', trustedApproval.verdict.code),
       observation('weakPolicyRefUnchanged', weakPolicy.base, await currentRef(weakPolicy)),
@@ -369,10 +373,10 @@ export async function provenance() {
   return {
     sourceFingerprint: digest(files),
     files,
-    gitRevision: revision.exitCode === 0 ? revision.stdout.trim() : null,
-    gitDirty: status.exitCode === 0 ? status.stdout.trim().length > 0 : null,
+    gitRevision: processSucceeded(revision) ? revision.stdout.trim() : null,
+    gitDirty: processSucceeded(status) ? status.stdout.trim().length > 0 : null,
     nodeVersion: process.version,
-    gitVersion: gitVersion.stdout.trim(),
+    gitVersion: processSucceeded(gitVersion) ? gitVersion.stdout.trim() : 'unavailable',
   };
 }
 
