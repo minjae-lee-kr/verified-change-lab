@@ -5,8 +5,10 @@ permissions:
 jobs:
   verify:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+        node: ['24.12.0', '24.19.0']
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
     steps:
@@ -15,7 +17,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '24.19.0'
+          node-version: ${{ matrix.node }}
       - uses: pnpm/action-setup@d9184bf108216479bc5a137cc391f4d7b14c870b # v6.1.0
         with:
           version: 11.25.0
@@ -24,5 +26,5 @@ jobs:
       - run: pnpm experiment
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: observed-report-${{ matrix.os }}
+          name: observed-report-${{ matrix.os }}-node-${{ matrix.node }}
           path: dist/report.json
