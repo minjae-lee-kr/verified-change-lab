@@ -41,6 +41,8 @@ Fixture repositories use an empty Git template and isolated global/system config
 
 An explicit `--git-dir` does not by itself isolate Git storage: inherited `GIT_COMMON_DIR` or `GIT_OBJECT_DIRECTORY` can redirect object writes elsewhere. Every Git subprocess removes inherited `GIT_*` variables, case-insensitively, then sets the lab's fixed configuration and its own index/worktree or synthetic author values. The regression runs contaminated child environments against an unrelated synthetic directory, checks that it stays unchanged, and reads the generated fixture from a clean process through a real approval/update flow. This controls ambient Git configuration; it does not sandbox candidate code or authenticate the Git executable.
 
+On Windows, owned fixture commands pass `-c core.longpaths=true` without changing user configuration files. This enables [certain Git operations on long paths](https://gitforwindows.org/faq); it does not remove all directory initialization or process path limits. If those stages fail with a long-path error, use a shorter checkout path.
+
 <a id="manual-approval"></a>
 
 ## Manual approval

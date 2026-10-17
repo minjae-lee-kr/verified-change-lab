@@ -31,6 +31,8 @@ export const isolatedGitEnvironment = (): NodeJS.ProcessEnv => ({
   GIT_CONFIG_GLOBAL: process.platform === 'win32' ? 'NUL' : '/dev/null',
   GIT_TERMINAL_PROMPT: '0',
 });
+// Owned fixture commands opt in without reading or persisting user configuration.
+const fixtureGitOptions = process.platform === 'win32' ? ['-c', 'core.longpaths=true'] : [];
 // These overrides are supplied only by the fixed fixture builders below.
 type GitEnvironment = Partial<
   Record<
@@ -51,12 +53,16 @@ export async function git(
   acceptFailure = false,
 ): Promise<ProcessResult> {
   await assertOwnedPath(fixture.repository);
-  const result = await boundedProcess('git', ['--git-dir', fixture.repository, ...args], {
-    cwd: fixture.root,
-    timeoutMs: 5000,
-    maxOutputBytes: 64_000,
-    env: { ...isolatedGitEnvironment(), ...extraEnv },
-  });
+  const result = await boundedProcess(
+    'git',
+    [...fixtureGitOptions, '--git-dir', fixture.repository, ...args],
+    {
+      cwd: fixture.root,
+      timeoutMs: 5000,
+      maxOutputBytes: 64_000,
+      env: { ...isolatedGitEnvironment(), ...extraEnv },
+    },
+  );
   await trace(fixture.root, 'git', result);
   if (
     !acceptFailure &&
@@ -110,7 +116,15 @@ export async function createFixture(label: string): Promise<Fixture> {
   await mkdir(template);
   const initialized = await boundedProcess(
     'git',
-    ['init', '--bare', '--quiet', '--object-format=sha1', `--template=${template}`, repository],
+    [
+      ...fixtureGitOptions,
+      'init',
+      '--bare',
+      '--quiet',
+      '--object-format=sha1',
+      `--template=${template}`,
+      repository,
+    ],
     { cwd: root, timeoutMs: 5000, maxOutputBytes: 64_000, env: isolatedGitEnvironment() },
   );
   await trace(root, 'git-init-synthetic-fixture', initialized);
