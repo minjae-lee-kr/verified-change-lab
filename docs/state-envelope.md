@@ -1,4 +1,4 @@
-# A receipt beside the change, or inside the selected state?
+# Does rolling back code make an approval reusable?
 
 [한국어](state-envelope.ko.md) · [Main experiment](../README.md)
 
@@ -12,6 +12,10 @@ both the selected code OID and operation receipts. One ref selects that state co
 The operation ID is the exact approval digest, so retrying the same approval does not
 invent another identity. The existing real checkers and local approval binding still
 gate a new selection. They do not authenticate a reviewer.
+
+[Compare the recorded states](https://minjae-lee-kr.github.io/research/approval-memory/)
+from source revision `23731a1`. The reader follows a saved run; the command below
+creates a new one.
 
 ## Run the fixed traces
 
@@ -41,7 +45,7 @@ The expected distinctions are deliberately small:
 
 | Controlled boundary                                                    | Selection and receipt after the worker exits                                                                    |
 | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Separate code-ref update, then stop before receipt write               | Candidate selected; receipt absent. A normal continuation writes the receipt.                                   |
+| Separate code-ref update, then stop before receipt write               | Candidate selected; receipt absent. A separate successful-path control writes the receipt.                      |
 | State object prepared, then stop before state CAS                      | Previous selection and previous receipts remain selected. The prepared object can exist without being selected. |
 | State CAS acknowledged by Git, then stop before caller acknowledgement | Candidate and receipt are read together from the selected state OID. The caller acknowledgement is absent.      |
 | Select the old code in a new state, preserving receipts                | The same approval is already recorded; no new transition is issued.                                             |
@@ -50,8 +54,16 @@ The expected distinctions are deliberately small:
 The parent stops a real owned Node worker at an IPC barrier and waits for its actual
 exit. The barriers are between completed Git commands. They do not interrupt a Git
 rename or simulate power loss. Deadlines bound failures; they do not choose the order.
-The separate-write control also resumes through a real successful receipt-writing
-path, rather than demonstrating a worker that could never write a receipt.
+A separate successful-path control restores the base ref and starts a new worker,
+which selects the candidate and writes the receipt. It does not resume the
+interrupted attempt.
+
+A separate regression holds two real workers at the same prepared-state barrier,
+then releases both. Exactly one conditional ref update is acknowledged. With the
+same approval, both re-observations return `ALREADY_RECORDED`; with distinct
+candidates and approvals, the loser observes `BASE_CHANGED`. The test derives the
+winner from process results and the selected receipt. It does not measure physical
+lock overlap, fairness or throughput, and adds no cases to the saved five-trace run.
 
 ## The reader contract changes too
 

@@ -19,7 +19,6 @@ const copy = {
     },
     skip: 'Skip to evidence',
     languageLabel: 'Language',
-    home: 'Verified Change Lab home',
     loading: 'Loading the locally generated evidence…',
     loadError: 'Run pnpm experiment, then reload.',
     eyebrow: 'AUTOMATION · EVIDENCE · CHANGE CONTROL',
@@ -133,7 +132,6 @@ const copy = {
     },
     skip: '검증 근거로 이동',
     languageLabel: '언어 선택',
-    home: 'Verified Change Lab 홈',
     loading: '로컬 실행 결과를 불러오고 있습니다…',
     loadError: 'pnpm experiment 실행 후 새로고침하세요.',
     eyebrow: '자동화 · 검증 근거 · 변경 통제',
@@ -278,7 +276,6 @@ function render() {
   document.documentElement.lang = language;
   document.querySelector('.skip').textContent = t.skip;
   document.querySelector('.languages').setAttribute('aria-label', t.languageLabel);
-  document.querySelector('.brand').setAttribute('aria-label', t.home);
   if ($('loading')) $('loading').textContent = loadFailed ? t.loadError : t.loading;
   for (const lang of ['ko', 'en']) $(lang).setAttribute('aria-pressed', String(language === lang));
   for (const id of ['eyebrow', 'headline', 'lead', 'boundary']) $(id).textContent = t[id];

@@ -5,14 +5,19 @@ import { provenance } from '../src/experiment.ts';
 import { createFixture, git, prepareCandidate } from '../src/git.ts';
 import { approveCandidate } from '../src/protocol.ts';
 import { verifyCandidate } from '../src/runner.ts';
+import { boundedProcess, processSucceeded } from '../src/process.ts';
+import type { ProcessResult } from '../src/types.ts';
 import {
   captureState,
   commitState,
   initializeState,
+  operationReceipt,
   parseState,
   prepareStateChange,
   selectPreparedState,
   STATE_REF,
+  type AuthorizedChange,
+  type StatePlan,
 } from '../src/state-envelope.ts';
 import {
   runStateExperiments,
@@ -20,7 +25,180 @@ import {
   stateCasesPassed,
 } from '../src/state-envelope-experiment.ts';
 import { checkStateCases } from '../src/state-envelope-check.ts';
-import { digest, LAB, redacted, runId, writeJson } from '../src/support.ts';
+import {
+  digest,
+  LAB,
+  PROJECT,
+  readJson,
+  readTranscript,
+  redacted,
+  runId,
+  writeJson,
+} from '../src/support.ts';
+
+test(
+  'two prepared workers distinguish the same approval from a competing candidate',
+  { timeout: 90_000 },
+  async () => {
+    for (const sameApproval of [true, false]) {
+      const fixture = await createFixture(sameApproval ? 'cw-same-test' : 'cw-distinct-test');
+      const authorize = async (variant: 'A' | 'B'): Promise<AuthorizedChange> => {
+        const candidate = await prepareCandidate(fixture, variant);
+        const evidence = await verifyCandidate(fixture, candidate);
+        const approved = await approveCandidate(
+          fixture,
+          candidate,
+          evidence,
+          'Scripted competing writer',
+          `APPLY ${candidate.commit} ${digest(evidence)}`,
+        );
+        assert.ok(approved.approval, approved.verdict.code);
+        return { fixture, candidate, evidence, approval: approved.approval };
+      };
+      const first = await authorize('A');
+      const inputs = [first, sameApproval ? first : await authorize('B')];
+      assert.equal(digest(inputs[0]!.approval) === digest(inputs[1]!.approval), sameApproval);
+      assert.equal(inputs[0]!.candidate.commit === inputs[1]!.candidate.commit, sameApproval);
+      const initial = await initializeState(fixture);
+      const paths = await Promise.all(
+        inputs.map(async (input) => {
+          const directory = join(fixture.root, 'state-executions', runId());
+          const requestPath = join(directory, 'request.json');
+          await writeJson(requestPath, { input, mode: 'envelope' });
+          return { directory, requestPath };
+        }),
+      );
+      const prepared: {
+        index: number;
+        plan: Extract<StatePlan, { code: 'PREPARED' }>;
+        release: () => void;
+      }[] = [];
+      const terminators = new Map<number, () => void>();
+      let barrierError: unknown = null;
+      const fail = (error: unknown) => {
+        barrierError ??= error;
+        for (const terminate of terminators.values()) terminate();
+      };
+      const tasks = paths.map(({ requestPath }, index) =>
+        boundedProcess(
+          process.execPath,
+          [join(PROJECT, 'src/state-envelope-worker.ts'), requestPath],
+          {
+            cwd: fixture.root,
+            timeoutMs: 20_000,
+            maxOutputBytes: 32_000,
+            ipc: {
+              onMessage(message, child, terminate) {
+                terminators.set(index, terminate);
+                if (barrierError) {
+                  terminate();
+                  return;
+                }
+                if (
+                  !message ||
+                  typeof message !== 'object' ||
+                  !('phase' in message) ||
+                  !('detail' in message)
+                ) {
+                  fail(new Error('Missing worker phase evidence.'));
+                  return;
+                }
+                const send = (phase: string) =>
+                  child.send({ continue: phase }, (error) => {
+                    if (error) fail(error);
+                  });
+                if (message.phase === 'state-prepared') {
+                  const plan = message.detail as StatePlan;
+                  if (
+                    plan.code !== 'PREPARED' ||
+                    plan.expected.oid !== initial.oid ||
+                    prepared.some((p) => p.index === index)
+                  ) {
+                    fail(new Error('Workers did not prepare once from the same expected OID.'));
+                    return;
+                  }
+                  prepared.push({ index, plan, release: () => send('state-prepared') });
+                  // Release only after BOTH real workers have prepared. This does not
+                  // assert that their Git lock syscalls overlap or determine a winner.
+                  if (prepared.length === 2) prepared.forEach((p) => p.release());
+                } else if (message.phase === 'ready' || message.phase === 'state-selected')
+                  send(message.phase);
+                else fail(new Error('Unexpected worker phase.'));
+              },
+            },
+          },
+        ).finally(() => terminators.delete(index)),
+      );
+      try {
+        const processes = await Promise.all(tasks);
+        assert.equal(barrierError, null);
+        assert.equal(prepared.length, 2);
+        for (const result of processes) {
+          assert.equal(result.directChildExitConfirmed, true);
+          assert.equal(result.signal, null);
+          assert.equal(result.timedOut, false);
+          assert.equal(result.outputLimited, false);
+          assert.equal(result.processError, undefined);
+        }
+        const successful = processes.flatMap((result, index) =>
+          processSucceeded(result) ? [index] : [],
+        );
+        assert.equal(successful.length, 1);
+        const winner = successful[0]!;
+        assert.equal(processes[1 - winner]!.exitCode, 1);
+        assert.match(processes[1 - winner]!.stderr, /State CAS was not acknowledged/);
+        const selected = await captureState(fixture);
+        assert.equal(selected.oid, prepared.find((p) => p.index === winner)!.plan.next.oid);
+        assert.equal(selected.state.selectedCandidate, inputs[winner]!.candidate.commit);
+        assert.deepEqual(selected.state.receipts, [operationReceipt(inputs[winner]!)]);
+        const attempts = (await readTranscript(fixture.root))
+          .filter((entry) => entry.event === 'git')
+          .map((entry) => entry.detail as ProcessResult)
+          .filter(
+            (result) =>
+              result.arguments.slice(-4, -2).join('|') === `update-ref|${STATE_REF}` &&
+              result.arguments.at(-1) === initial.oid,
+          );
+        assert.equal(attempts.length, 2);
+        assert.equal(attempts.filter(processSucceeded).length, 1);
+        for (const result of attempts) {
+          assert.equal(result.directChildExitConfirmed, true);
+          assert.equal(result.signal, null);
+          assert.equal(result.timedOut, false);
+          assert.equal(result.outputLimited, false);
+          assert.equal(result.processError, undefined);
+          assert.notEqual(result.exitCode, null);
+        }
+        for (const [index, input] of inputs.entries()) {
+          const retry = await prepareStateChange(input);
+          assert.equal(
+            retry.code,
+            sameApproval || index === winner ? 'ALREADY_RECORDED' : 'BASE_CHANGED',
+          );
+          let acknowledgement: unknown = null;
+          try {
+            acknowledgement = await readJson(join(paths[index]!.directory, 'acknowledgement.json'));
+          } catch (error) {
+            if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT'))
+              throw error;
+          }
+          assert.deepEqual(
+            acknowledgement,
+            index === winner ? { code: 'STATE_CAS_ACKNOWLEDGED', stateOid: selected.oid } : null,
+          );
+        }
+        assert.equal(
+          (await captureState(fixture)).oid,
+          selected.oid,
+          'Re-observation must not select another state.',
+        );
+      } finally {
+        for (const terminate of terminators.values()) terminate();
+        await Promise.allSettled(tasks);
+      }
+    }
+  },
+);
 
 test(
   'real interruption traces distinguish retained selection/receipt from acknowledgement',

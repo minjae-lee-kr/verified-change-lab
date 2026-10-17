@@ -202,7 +202,7 @@ nav button {
 }
 nav button span:first-child {
   font-size: 10px;
-  color: #637184;
+  color: #53657d;
 }
 nav button[aria-pressed='true'] {
   background: #eaf0fa;
