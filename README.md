@@ -4,7 +4,9 @@
 
 [한국어](README.ko.md) · [Design and trust boundaries](docs/design.md)
 
-An approval harness binds immutable Git candidates to independently defined checks before conditionally selecting a commit. The deliberately naive path checks a candidate, waits for approval and commits a changed workspace; a runtime check then catches the broken contract. The protected path selects the exact verified commit.
+An automated change can pass its checks yet select different code after approval. If the candidate can also weaken its own checks, a green result may not mean the promised validation ran.
+
+This independent, synthetic lab stores each candidate as an immutable Git commit and checks its snapshot in separate processes under a fixed policy. Approval binds the candidate and its evidence. Git selects that exact commit only if the local release ref still has the expected base. A deliberately naive path instead commits a changed workspace after checking; its subsequent runtime check fails.
 
 Artifact identity is only half the problem. In the deliberate control, a candidate supplies `strict: true` together with `noCheck: true`: TypeScript skips type checking as configured and reports no type errors. The trusted checker supplies its own options and source inventory, detects the errors and refuses approval. This closes the candidate-configuration route shown here; source-level suppressions remain allowed by the declared policy.
 
@@ -44,6 +46,8 @@ Three decisions are worth reviewing:
 - **Keep observation separate from attribution.** After an acknowledgement disappears, reading the ref establishes its current value. It does not establish which executor changed it or whether an earlier change was later undone.
 
 The [design notes](docs/design.md) explain evidence coverage, process cleanup, the A-B-A counterexample and the limits of source fingerprints. They also map each decision to its implementation.
+
+Preserving this link costs snapshot storage and a fresh review when the candidate or policy changes. The effect demonstrated here is a local Git ref update; deployment is a separate boundary.
 
 ## Try an explicit manual approval
 
